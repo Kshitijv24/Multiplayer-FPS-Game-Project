@@ -247,6 +247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewPoint: {fileID: 1506688060}
   mouseSensitivity: 5
+  moveSpeed: 5
 --- !u!1 &148464996
 GameObject:
   m_ObjectHideFlags: 0
