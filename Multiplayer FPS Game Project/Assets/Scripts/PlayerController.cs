@@ -26,6 +26,12 @@ public class PlayerController : MonoBehaviour
         HandlePlayerMovement();
     }
 
+    private void LateUpdate()
+    {
+        Camera.main.transform.position = viewPoint.position;
+        Camera.main.transform.rotation = viewPoint.rotation;
+    }
+
     private void HandlePlayerMouseMovement()
     {
         mouseInput = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y")) * mouseSensitivity;
