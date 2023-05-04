@@ -226,6 +226,7 @@ MonoBehaviour:
   mouseSensitivity: 5
   moveSpeed: 5
   characterController: {fileID: 43045886}
+  runSpeed: 20
 --- !u!143 &43045886
 CharacterController:
   m_ObjectHideFlags: 0
