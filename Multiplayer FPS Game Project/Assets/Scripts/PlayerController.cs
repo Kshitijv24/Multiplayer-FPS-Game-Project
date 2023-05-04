@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform viewPoint;
     [SerializeField] float mouseSensitivity = 1f;
     [SerializeField] float moveSpeed = 1f;
+    [SerializeField] CharacterController characterController;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -47,6 +48,6 @@ public class PlayerController : MonoBehaviour
 
         movement = ((transform.forward * moveDirection.z) + (transform.right * moveDirection.x)).normalized;
 
-        transform.position += movement * moveSpeed * Time.deltaTime;
+        characterController.Move(movement * moveSpeed * Time.deltaTime);
     }
 }
