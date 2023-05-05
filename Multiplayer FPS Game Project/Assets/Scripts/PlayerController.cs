@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float gravityMod;
     [SerializeField] Transform groundCheckPoint;
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] GameObject bulletImpact;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -112,6 +113,13 @@ public class PlayerController : MonoBehaviour
         if(Physics.Raycast(ray, out RaycastHit hit))
         {
             Debug.Log("We hit " + hit.collider.name);
+
+            GameObject bulletImpactObject = Instantiate(
+                bulletImpact, hit.point + (hit.normal * 0.002f), 
+                Quaternion.LookRotation(hit.normal, 
+                Vector3.up));
+
+            Destroy(bulletImpactObject, 1f);
         }
     }
 }
