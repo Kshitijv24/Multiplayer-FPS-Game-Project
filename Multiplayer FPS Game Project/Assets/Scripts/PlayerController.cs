@@ -9,10 +9,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed;
     [SerializeField] CharacterController characterController;
     [SerializeField] float runSpeed;
+    [SerializeField] float jumpForce;
+    [SerializeField] float gravityMod;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
-    Vector3 moveDirection, movement;
+    Vector3 moveDirection;
+    Vector3 movement;
     float activeMoveSpeed;
 
     private void Start()
@@ -68,11 +71,12 @@ public class PlayerController : MonoBehaviour
         movement.y = yVelocity;
 
         if(characterController.isGrounded)
-        {
             movement.y = 0f;
-        }
 
-        movement.y += Physics.gravity.y * Time.deltaTime;
+        if (Input.GetButtonDown("Jump") && characterController.isGrounded)
+            movement.y = jumpForce;
+
+        movement.y += Physics.gravity.y * Time.deltaTime * gravityMod;
         characterController.Move(movement * Time.deltaTime);
     }
 }

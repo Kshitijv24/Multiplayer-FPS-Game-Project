@@ -227,6 +227,8 @@ MonoBehaviour:
   moveSpeed: 5
   characterController: {fileID: 43045886}
   runSpeed: 20
+  jumpForce: 12
+  gravityMod: 2.5
 --- !u!143 &43045886
 CharacterController:
   m_ObjectHideFlags: 0
