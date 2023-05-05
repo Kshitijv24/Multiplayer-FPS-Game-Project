@@ -20,22 +20,29 @@ public class PlayerController : MonoBehaviour
     Vector3 movement;
     float activeMoveSpeed;
     bool isGrounded;
+    Camera mainCamera;
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        mainCamera = Camera.main;
     }
 
     private void Update()
     {
         HandlePlayerMouseMovement();
         HandlePlayerMovement();
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            Shoot();
+        }
     }
 
     private void LateUpdate()
     {
-        Camera.main.transform.position = viewPoint.position;
-        Camera.main.transform.rotation = viewPoint.rotation;
+        mainCamera.transform.position = viewPoint.position;
+        mainCamera.transform.rotation = viewPoint.rotation;
     }
 
     private void HandlePlayerMouseMovement()
@@ -95,5 +102,16 @@ public class PlayerController : MonoBehaviour
 
         movement.y += Physics.gravity.y * Time.deltaTime * gravityMod;
         characterController.Move(movement * Time.deltaTime);
+    }
+
+    private void Shoot()
+    {
+        Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        ray.origin = mainCamera.transform.position;
+
+        if(Physics.Raycast(ray, out RaycastHit hit))
+        {
+            Debug.Log("We hit " + hit.collider.name);
+        }
     }
 }
