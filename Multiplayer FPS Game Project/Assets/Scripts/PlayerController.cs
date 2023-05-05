@@ -11,12 +11,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float runSpeed;
     [SerializeField] float jumpForce;
     [SerializeField] float gravityMod;
+    [SerializeField] Transform groundCheckPoint;
+    [SerializeField] LayerMask groundLayer;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
     Vector3 moveDirection;
     Vector3 movement;
     float activeMoveSpeed;
+    bool isGrounded;
 
     private void Start()
     {
@@ -73,7 +76,9 @@ public class PlayerController : MonoBehaviour
         if(characterController.isGrounded)
             movement.y = 0f;
 
-        if (Input.GetButtonDown("Jump") && characterController.isGrounded)
+        isGrounded = Physics.Raycast(groundCheckPoint.position, Vector3.down, 0.25f, groundLayer);
+
+        if (Input.GetButtonDown("Jump") && isGrounded)
             movement.y = jumpForce;
 
         movement.y += Physics.gravity.y * Time.deltaTime * gravityMod;
