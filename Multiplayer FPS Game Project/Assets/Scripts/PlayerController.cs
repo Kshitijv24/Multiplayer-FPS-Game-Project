@@ -54,6 +54,18 @@ public class PlayerController : MonoBehaviour
             -mouseVerticalRotation,
             viewPoint.rotation.eulerAngles.y,
             transform.rotation.eulerAngles.z);
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else if(Cursor.lockState == CursorLockMode.None)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+        }
     }
 
     private void HandlePlayerMovement()
