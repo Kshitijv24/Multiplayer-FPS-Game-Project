@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,8 +14,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float gravityMod;
     [SerializeField] Transform groundCheckPoint;
     [SerializeField] LayerMask groundLayer;
+
+    [Header("================= Bullet Variables =================")]
+    [Space(10)]
     [SerializeField] GameObject bulletImpact;
     [SerializeField] float timeBetweenShots;
+
+    [Header("================= Gun Variables=================")]
+    [Space(10)]
+    [SerializeField] float maxHeat;
+    [SerializeField] float heatPerShot;
+    [SerializeField] float coolRate;
+    [SerializeField] float overheatCoolRate;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -24,6 +35,8 @@ public class PlayerController : MonoBehaviour
     bool isGrounded;
     Camera mainCamera;
     float shotCounter;
+    float heatCounter;
+    bool overHeated;
 
     private void Start()
     {
@@ -35,21 +48,7 @@ public class PlayerController : MonoBehaviour
     {
         HandlePlayerMouseMovement();
         HandlePlayerMovement();
-
-        if(Input.GetMouseButtonDown(0))
-        {
-            Shoot();
-        }
-
-        if(Input.GetMouseButton(0))
-        {
-            shotCounter -= Time.deltaTime;
-
-            if(shotCounter <= 0 )
-            {
-                Shoot();
-            }
-        }
+        HandlePlayerShooting();
     }
 
     private void LateUpdate()
@@ -117,6 +116,42 @@ public class PlayerController : MonoBehaviour
         characterController.Move(movement * Time.deltaTime);
     }
 
+    private void HandlePlayerShooting()
+    {
+        if (!overHeated)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Shoot();
+            }
+
+            if (Input.GetMouseButton(0))
+            {
+                shotCounter -= Time.deltaTime;
+
+                if (shotCounter <= 0)
+                {
+                    Shoot();
+                }
+            }
+
+            heatCounter -= coolRate * Time.deltaTime;
+        }
+        if(heatCounter <= 0)
+        {
+            heatCounter = 0;
+        }
+        else
+        {
+            heatCounter -= overheatCoolRate * Time.deltaTime;
+
+            if(heatCounter <= 0 )
+            {
+                overHeated = false;
+            }
+        }
+    }
+
     private void Shoot()
     {
         Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
@@ -135,5 +170,13 @@ public class PlayerController : MonoBehaviour
         }
 
         shotCounter = timeBetweenShots;
+
+        heatCounter += heatPerShot;
+
+        if(heatCounter >= maxHeat)
+        {
+            heatCounter = maxHeat;
+            overHeated = true;
+        }
     }
 }
