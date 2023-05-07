@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float heatPerShot;
     [SerializeField] float coolRate;
     [SerializeField] float overheatCoolRate;
+    [SerializeField] Gun[] gunArray;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -37,12 +38,14 @@ public class PlayerController : MonoBehaviour
     float shotCounter;
     float heatCounter;
     bool overHeated;
+    int selectedGun;
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         mainCamera = Camera.main;
         UIController.Instance.weaponTemperatureSlider.maxValue = maxHeat;
+        SwitchGun();
     }
 
     private void Update()
@@ -153,6 +156,27 @@ public class PlayerController : MonoBehaviour
             }
         }
         UIController.Instance.weaponTemperatureSlider.value = heatCounter;
+
+        if(Input.GetAxisRaw("Mouse ScrollWheel") >  0)
+        {
+            selectedGun++;
+
+            if(selectedGun >= gunArray.Length)
+            {
+                selectedGun = 0;
+            }
+            SwitchGun();
+        }
+        else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
+        {
+            selectedGun--;
+
+            if (selectedGun < 0)
+            {
+                selectedGun = gunArray.Length - 1;
+            }
+            SwitchGun();
+        }
     }
 
     private void Shoot()
@@ -182,5 +206,15 @@ public class PlayerController : MonoBehaviour
             overHeated = true;
             UIController.Instance.overheatedMessage.gameObject.SetActive(true);
         }
+    }
+
+    private void SwitchGun()
+    {
+        foreach(Gun guns in gunArray)
+        {
+            guns.gameObject.SetActive(false);
+        }
+
+        gunArray[selectedGun].gameObject.SetActive(true);
     }
 }
