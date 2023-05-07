@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-    [SerializeField] bool isAutomatic;
-    [SerializeField] float timeBetweenShots;
-    [SerializeField] float heatPerShot;
+    public float timeBetweenShots;
+    public float heatPerShot;
+    public bool isAutomatic;
 }

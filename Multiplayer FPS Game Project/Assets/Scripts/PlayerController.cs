@@ -18,12 +18,12 @@ public class PlayerController : MonoBehaviour
     [Header("================= Bullet Variables =================")]
     [Space(10)]
     [SerializeField] GameObject bulletImpact;
-    [SerializeField] float timeBetweenShots;
+    //[SerializeField] float timeBetweenShots;
 
     [Header("================= Gun Variables=================")]
     [Space(10)]
     [SerializeField] float maxHeat;
-    [SerializeField] float heatPerShot;
+    //[SerializeField] float heatPerShot;
     [SerializeField] float coolRate;
     [SerializeField] float overheatCoolRate;
     [SerializeField] Gun[] gunArray;
@@ -129,7 +129,7 @@ public class PlayerController : MonoBehaviour
                 Shoot();
             }
 
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0) && gunArray[selectedGun].isAutomatic)
             {
                 shotCounter -= Time.deltaTime;
 
@@ -196,9 +196,9 @@ public class PlayerController : MonoBehaviour
             Destroy(bulletImpactObject, 1f);
         }
 
-        shotCounter = timeBetweenShots;
+        shotCounter = gunArray[selectedGun].timeBetweenShots;
 
-        heatCounter += heatPerShot;
+        heatCounter += gunArray[selectedGun].heatPerShot;
 
         if(heatCounter >= maxHeat)
         {
