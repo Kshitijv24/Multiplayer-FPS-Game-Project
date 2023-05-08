@@ -193,6 +193,14 @@ public class PlayerController : MonoBehaviour
             }
             SwitchGun();
         }
+        for (int i = 0; i < gunArray.Length; i++)
+        {
+            if (Input.GetKeyDown((i + 1).ToString()))
+            {
+                selectedGun = i;
+                SwitchGun();
+            }
+        }
     }
 
     private void Shoot()
