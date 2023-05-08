@@ -7,4 +7,5 @@ public class Gun : MonoBehaviour
     public float timeBetweenShots;
     public float heatPerShot;
     public bool isAutomatic;
+    public GameObject muzzleFlash;
 }

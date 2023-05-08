@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float coolRate;
     [SerializeField] float overheatCoolRate;
     [SerializeField] Gun[] gunArray;
+    [SerializeField] float muzzleDisplayTime;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -39,6 +40,7 @@ public class PlayerController : MonoBehaviour
     float heatCounter;
     bool overHeated;
     int selectedGun;
+    float muzzleCounter;
 
     private void Start()
     {
@@ -122,6 +124,16 @@ public class PlayerController : MonoBehaviour
 
     private void HandlePlayerShooting()
     {
+        if (gunArray[selectedGun].muzzleFlash.activeInHierarchy)
+        {
+            muzzleCounter -= Time.deltaTime;
+
+            if(muzzleCounter <= 0)
+            {
+                gunArray[selectedGun].muzzleFlash.SetActive(false);
+            }
+        }
+
         if (!overHeated)
         {
             if (Input.GetMouseButtonDown(0))
@@ -186,7 +198,7 @@ public class PlayerController : MonoBehaviour
 
         if(Physics.Raycast(ray, out RaycastHit hit))
         {
-            Debug.Log("We hit " + hit.collider.name);
+            //Debug.Log("We hit " + hit.collider.name);
 
             GameObject bulletImpactObject = Instantiate(
                 bulletImpact, hit.point + (hit.normal * 0.002f), 
@@ -206,6 +218,8 @@ public class PlayerController : MonoBehaviour
             overHeated = true;
             UIController.Instance.overheatedMessage.gameObject.SetActive(true);
         }
+        gunArray[selectedGun].muzzleFlash.SetActive(true);
+        muzzleCounter = muzzleDisplayTime;
     }
 
     private void SwitchGun()
@@ -216,5 +230,6 @@ public class PlayerController : MonoBehaviour
         }
 
         gunArray[selectedGun].gameObject.SetActive(true);
+        gunArray[selectedGun].muzzleFlash.SetActive(false);
     }
 }
