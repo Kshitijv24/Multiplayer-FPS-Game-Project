@@ -48,6 +48,10 @@ public class PlayerController : MonoBehaviour
         mainCamera = Camera.main;
         UIController.Instance.weaponTemperatureSlider.maxValue = maxHeat;
         SwitchGun();
+
+        Transform newSpawnPoint = SpawnManager.Instance.GetSpawnPoint();
+        transform.position = newSpawnPoint.position;
+        transform.rotation = newSpawnPoint.rotation;
     }
 
     private void Update()
