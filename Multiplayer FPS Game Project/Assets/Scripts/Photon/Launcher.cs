@@ -18,6 +18,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text roomNameText;
     [SerializeField] GameObject errorPanel;
     [SerializeField] TMP_Text errorText;
+    [SerializeField] GameObject roomBrowserPanel;
+    [SerializeField] RoomButton roomButton;
+    
+    List<RoomButton> roomButtonList = new List<RoomButton>();
+
 
     private void Awake()
     {
@@ -47,6 +52,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         createRoomPanel.SetActive(false);
         roomPanel.SetActive(false);
         errorPanel.SetActive(false);
+        roomBrowserPanel.SetActive(false);
     }
 
     public void OpenCreateRoomPannel()
@@ -83,6 +89,26 @@ public class Launcher : MonoBehaviourPunCallbacks
         loadingPanel.SetActive(true);
     }
 
+    public void OpenRoomBrowser()
+    {
+        CloseMenus();
+        roomBrowserPanel.SetActive(true);
+    }
+
+    public void CloseRoomBrowser()
+    {
+        CloseMenus();
+        menuButtons.SetActive(true);
+    }
+
+    public void JoinRoom(RoomInfo inputInfo)
+    {
+        PhotonNetwork.JoinRoom(inputInfo.Name);
+        CloseMenus();
+        loadingText.text = "Joining Room....";
+        loadingPanel.SetActive(true);
+    }
+
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
@@ -114,5 +140,27 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         CloseMenus();
         menuButtons.SetActive(true);
+    }
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        foreach (RoomButton roomButton in roomButtonList)
+        {
+            Destroy(roomButton.gameObject);
+        }
+        roomButtonList.Clear();
+        roomButton.gameObject.SetActive(false);
+
+        for (int i = 0; i < roomList.Count; i++)
+        {
+            if (roomList[i].PlayerCount != roomList[i].MaxPlayers && !roomList[i].RemovedFromList)
+            {
+                RoomButton newRoomButton = Instantiate(roomButton, roomButton.transform.parent);
+                newRoomButton.SetButtonDetails(roomList[i]);
+                newRoomButton.gameObject.SetActive(true);
+
+                roomButtonList.Add(newRoomButton);
+            }
+        }
     }
 }
