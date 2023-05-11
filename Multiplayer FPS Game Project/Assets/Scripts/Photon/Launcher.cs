@@ -20,8 +20,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text errorText;
     [SerializeField] GameObject roomBrowserPanel;
     [SerializeField] RoomButton roomButton;
+    [SerializeField] TMP_Text playerNameLabel;
     
     List<RoomButton> roomButtonList = new List<RoomButton>();
+    List<TMP_Text> playerNameList = new List<TMP_Text>();
 
 
     private void Awake()
@@ -109,6 +111,31 @@ public class Launcher : MonoBehaviourPunCallbacks
         loadingPanel.SetActive(true);
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    private void ListAllPlayers()
+    {
+        foreach (TMP_Text player in playerNameList)
+        {
+            Destroy(player.gameObject);
+        }
+        playerNameList.Clear();
+
+        Player[] playerArray = PhotonNetwork.PlayerList;
+
+        for (int i = 0; i < playerArray.Length; i++)
+        {
+            TMP_Text newPlayerLabel = Instantiate(playerNameLabel, playerNameLabel.transform.parent);
+            newPlayerLabel.text = playerArray[i].NickName;
+            newPlayerLabel.gameObject.SetActive(true);
+
+            playerNameList.Add (newPlayerLabel);
+        }
+    }
+
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
@@ -119,6 +146,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         CloseMenus();
         menuButtons.SetActive(true);
+
+        PhotonNetwork.NickName = Random.Range(0, 1000).ToString();
     }
 
     public override void OnJoinedRoom()
@@ -127,6 +156,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         roomPanel.SetActive(true);
 
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+        ListAllPlayers();
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -162,5 +192,19 @@ public class Launcher : MonoBehaviourPunCallbacks
                 roomButtonList.Add(newRoomButton);
             }
         }
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        TMP_Text newPlayerLabel = Instantiate(playerNameLabel, playerNameLabel.transform.parent);
+        newPlayerLabel.text = newPlayer.NickName;
+        newPlayerLabel.gameObject.SetActive(true);
+
+        playerNameList.Add(newPlayerLabel);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        ListAllPlayers();
     }
 }
