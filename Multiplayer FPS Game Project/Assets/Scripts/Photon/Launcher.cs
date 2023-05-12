@@ -25,6 +25,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_InputField nameInputField;
     [SerializeField] string levelToPlay;
     [SerializeField] GameObject startButton;
+    [SerializeField] GameObject testRoomButton;
     
     List<RoomButton> roomButtonList = new List<RoomButton>();
     List<TMP_Text> playerNameList = new List<TMP_Text>();
@@ -51,8 +52,13 @@ public class Launcher : MonoBehaviourPunCallbacks
         loadingText.text = "Connecting To Network....";
 
         PhotonNetwork.ConnectUsingSettings();
+
+#if UNITY_EDITOR
+        testRoomButton.SetActive(true);
+#endif
     }
 
+    #region Normal Methods
     private void CloseMenus()
     {
         loadingPanel.SetActive(false);
@@ -161,6 +167,21 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.LoadLevel(levelToPlay);
     }
+
+    public void QuickJoin()
+    {
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = 8;
+
+        PhotonNetwork.CreateRoom("Test", roomOptions);
+        CloseMenus();
+        loadingText.text = "Creating Test Room....";
+        loadingPanel.SetActive(true);
+    }
+
+    #endregion
+
+    #region Photon Override Methods
 
     public override void OnConnectedToMaster()
     {
@@ -271,4 +292,6 @@ public class Launcher : MonoBehaviourPunCallbacks
             startButton.SetActive(false);
         }
     }
+
+    #endregion
 }
