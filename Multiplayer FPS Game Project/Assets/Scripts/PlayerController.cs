@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     //[SerializeField] float timeBetweenShots;
     [SerializeField] GameObject playerHitImpact;
 
-    [Header("================= Gun Variables=================")]
+    [Header("================= Gun Variables =================")]
     [Space(10)]
     [SerializeField] float maxHeat;
     //[SerializeField] float heatPerShot;
@@ -30,6 +30,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [SerializeField] float overheatCoolRate;
     [SerializeField] Gun[] gunArray;
     [SerializeField] float muzzleDisplayTime;
+
+    [Header("================= Player Health Variables =================")]
+    [Space(10)]
+    [SerializeField] int maxHealth;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -43,6 +47,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     bool overHeated;
     int selectedGun;
     float muzzleCounter;
+    int currentHealth;
 
     private void Start()
     {
@@ -50,10 +55,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         mainCamera = Camera.main;
         UIController.Instance.weaponTemperatureSlider.maxValue = maxHeat;
         SwitchGun();
-
-        //Transform newSpawnPoint = SpawnPointManager.Instance.GetSpawnPoint();
-        //transform.position = newSpawnPoint.position;
-        //transform.rotation = newSpawnPoint.rotation;
+        currentHealth = maxHealth;
     }
 
     private void Update()
@@ -223,7 +225,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 Debug.Log("Hit " + hit.collider.gameObject.GetPhotonView().Owner.NickName);
                 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
 
-                hit.collider.gameObject.GetPhotonView().RPC(nameof(DealDamage), RpcTarget.All, photonView.Owner.NickName);
+                hit.collider.gameObject.GetPhotonView().RPC(
+                    nameof(DealDamage), 
+                    RpcTarget.All, 
+                    photonView.Owner.NickName, 
+                    gunArray[selectedGun].shotDamage);
             }
             else
             {
@@ -262,18 +268,23 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void DealDamage(string damager)
+    public void DealDamage(string damager, int damageAmount)
     {
-        TakeDamage(damager);
+        TakeDamage(damager, damageAmount);
     }
 
-    public void TakeDamage(string damager)
+    public void TakeDamage(string damager, int damageAmount)
     {
         if (photonView.IsMine)
         {
             //Debug.Log(photonView.Owner.NickName + "has been hit by " + damager);
+            currentHealth -= damageAmount;
 
-            PlayerSpawner.Instance.Die(damager);
+            if(currentHealth <= 0)
+            {
+                currentHealth = 0;
+                PlayerSpawner.Instance.Die(damager);
+            }
         }
     }
 }

@@ -8,4 +8,5 @@ public class Gun : MonoBehaviour
     public float heatPerShot;
     public bool isAutomatic;
     public GameObject muzzleFlash;
+    public int shotDamage;
 }
