@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviourPunCallbacks
 {
     [SerializeField] Transform viewPoint;
     [SerializeField] float mouseSensitivity;
@@ -56,15 +57,21 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        HandlePlayerMouseMovement();
-        HandlePlayerMovement();
-        HandlePlayerShooting();
+        if (photonView.IsMine)
+        {
+            HandlePlayerMouseMovement();
+            HandlePlayerMovement();
+            HandlePlayerShooting();
+        }
     }
 
     private void LateUpdate()
     {
-        mainCamera.transform.position = viewPoint.position;
-        mainCamera.transform.rotation = viewPoint.rotation;
+        if (photonView.IsMine)
+        {
+            mainCamera.transform.position = viewPoint.position;
+            mainCamera.transform.rotation = viewPoint.rotation;
+        }
     }
 
     private void HandlePlayerMouseMovement()
