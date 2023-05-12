@@ -23,6 +23,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text playerNameLabel;
     [SerializeField] GameObject nameInputPanel;
     [SerializeField] TMP_InputField nameInputField;
+    [SerializeField] string levelToPlay;
+    [SerializeField] GameObject startButton;
     
     List<RoomButton> roomButtonList = new List<RoomButton>();
     List<TMP_Text> playerNameList = new List<TMP_Text>();
@@ -155,9 +157,16 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
+    public void StartGame()
+    {
+        PhotonNetwork.LoadLevel(levelToPlay);
+    }
+
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
+        PhotonNetwork.AutomaticallySyncScene = true;
+
         loadingText.text = "Joining Lobby....";
     }
 
@@ -191,6 +200,15 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
         ListAllPlayers();
+
+        if(PhotonNetwork.IsMasterClient)
+        {
+            startButton.SetActive(true);
+        }
+        else
+        {
+            startButton.SetActive(false);
+        }
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
