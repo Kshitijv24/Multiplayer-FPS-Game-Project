@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [Space(10)]
     [SerializeField] GameObject bulletImpact;
     //[SerializeField] float timeBetweenShots;
+    [SerializeField] GameObject playerHitImpact;
 
     [Header("================= Gun Variables=================")]
     [Space(10)]
@@ -217,14 +218,22 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         if(Physics.Raycast(ray, out RaycastHit hit))
         {
-            //Debug.Log("We hit " + hit.collider.name);
+            if(hit.collider.gameObject.tag == "Player")
+            {
+                Debug.Log("Hit " + hit.collider.gameObject.GetPhotonView().Owner.NickName);
+                PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
 
-            GameObject bulletImpactObject = Instantiate(
-                bulletImpact, hit.point + (hit.normal * 0.002f), 
-                Quaternion.LookRotation(hit.normal, 
+                hit.collider.gameObject.GetPhotonView().RPC(nameof(DealDamage), RpcTarget.All, photonView.Owner.NickName);
+            }
+            else
+            {
+                GameObject bulletImpactObject = Instantiate(
+                bulletImpact, hit.point + (hit.normal * 0.002f),
+                Quaternion.LookRotation(hit.normal,
                 Vector3.up));
 
-            Destroy(bulletImpactObject, 1f);
+                Destroy(bulletImpactObject, 1f);
+            }
         }
 
         shotCounter = gunArray[selectedGun].timeBetweenShots;
@@ -250,5 +259,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         gunArray[selectedGun].gameObject.SetActive(true);
         gunArray[selectedGun].muzzleFlash.SetActive(false);
+    }
+
+    [PunRPC]
+    public void DealDamage(string damager)
+    {
+        TakeDamage(damager);
+    }
+
+    public void TakeDamage(string damager)
+    {
+        Debug.Log(photonView.Owner.NickName + "has been hit by " + damager);
+
+        gameObject.SetActive(false);
     }
 }
