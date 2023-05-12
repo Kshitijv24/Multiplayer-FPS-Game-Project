@@ -21,9 +21,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject roomBrowserPanel;
     [SerializeField] RoomButton roomButton;
     [SerializeField] TMP_Text playerNameLabel;
+    [SerializeField] GameObject nameInputPanel;
+    [SerializeField] TMP_InputField nameInputField;
     
     List<RoomButton> roomButtonList = new List<RoomButton>();
     List<TMP_Text> playerNameList = new List<TMP_Text>();
+    bool hasSetNickName;
+    string playerName = "Player Name";
 
 
     private void Awake()
@@ -55,6 +59,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         roomPanel.SetActive(false);
         errorPanel.SetActive(false);
         roomBrowserPanel.SetActive(false);
+        nameInputPanel.SetActive(false);
     }
 
     public void OpenCreateRoomPannel()
@@ -70,7 +75,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 8;
-        PhotonNetwork.CreateRoom(roomNameInputField.text, roomOptions);
+        PhotonNetwork.CreateRoom("Room Name: " + roomNameInputField.text, roomOptions);
 
         CloseMenus();
         loadingText.text = "Creating Room....";
@@ -136,6 +141,20 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
+    public void SetNickName()
+    {
+        if (!string.IsNullOrEmpty(nameInputField.text))
+        {
+            PhotonNetwork.NickName = nameInputField.text;
+            
+            PlayerPrefs.SetString(playerName, nameInputField.text);
+
+            CloseMenus();
+            menuButtons.SetActive(true);
+            hasSetNickName = true;
+        }
+    }
+
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
@@ -148,6 +167,21 @@ public class Launcher : MonoBehaviourPunCallbacks
         menuButtons.SetActive(true);
 
         PhotonNetwork.NickName = Random.Range(0, 1000).ToString();
+
+        if(!hasSetNickName)
+        {
+            CloseMenus();
+            nameInputPanel.SetActive(true);
+
+            if(PlayerPrefs.HasKey(playerName))
+            {
+                nameInputField.text = PlayerPrefs.GetString(playerName);
+            }
+        }
+        else
+        {
+            PhotonNetwork.NickName = PlayerPrefs.GetString(playerName);
+        }
     }
 
     public override void OnJoinedRoom()
