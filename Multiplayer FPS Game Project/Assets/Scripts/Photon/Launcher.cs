@@ -259,4 +259,16 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         ListAllPlayers();
     }
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            startButton.SetActive(true);
+        }
+        else
+        {
+            startButton.SetActive(false);
+        }
+    }
 }
