@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [Header("================= Player Animation Variables =================")]
     [Space(10)]
     [SerializeField] Animator animator;
+    [SerializeField] GameObject playerModel;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -60,10 +61,15 @@ public class PlayerController : MonoBehaviourPunCallbacks
         UIController.Instance.weaponTemperatureSlider.maxValue = maxHeat;
         
         SwitchGun();
-        currentHealth = maxHealth;
-        
-        UIController.Instance.healthSlider.maxValue = maxHealth;
-        UIController.Instance.healthSlider.value = currentHealth;
+        currentHealth = maxHealth; 
+
+        if(photonView.IsMine)
+        {
+            playerModel.SetActive(false);
+
+            UIController.Instance.healthSlider.maxValue = maxHealth;
+            UIController.Instance.healthSlider.value = currentHealth;
+        }
     }
 
     private void Update()
