@@ -35,6 +35,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [Space(10)]
     [SerializeField] int maxHealth;
 
+    [Header("================= Player Animation Variables =================")]
+    [Space(10)]
+    [SerializeField] Animator animator;
+
     float mouseVerticalRotation;
     Vector2 mouseInput;
     Vector3 moveDirection;
@@ -138,6 +142,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         movement.y += Physics.gravity.y * Time.deltaTime * gravityMod;
         characterController.Move(movement * Time.deltaTime);
+
+        animator.SetBool("grounded", isGrounded);
+        animator.SetFloat("speed", moveDirection.magnitude);
     }
 
     private void HandlePlayerShooting()
