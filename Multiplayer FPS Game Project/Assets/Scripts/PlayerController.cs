@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [Space(10)]
     [SerializeField] Animator animator;
     [SerializeField] GameObject playerModel;
+    [SerializeField] Transform modelGunPoint;
+    [SerializeField] Transform gunHolder;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -69,6 +71,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             UIController.Instance.healthSlider.maxValue = maxHealth;
             UIController.Instance.healthSlider.value = currentHealth;
+        }
+        else
+        {
+            gunHolder.parent = modelGunPoint;
+            gunHolder.localPosition = Vector3.zero;
+            gunHolder.localRotation = Quaternion.identity;
         }
     }
 
