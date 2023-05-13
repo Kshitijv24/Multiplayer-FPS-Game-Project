@@ -54,8 +54,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
         Cursor.lockState = CursorLockMode.Locked;
         mainCamera = Camera.main;
         UIController.Instance.weaponTemperatureSlider.maxValue = maxHeat;
+        
         SwitchGun();
         currentHealth = maxHealth;
+        
+        UIController.Instance.healthSlider.maxValue = maxHealth;
+        UIController.Instance.healthSlider.value = currentHealth;
     }
 
     private void Update()
@@ -285,6 +289,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 currentHealth = 0;
                 PlayerSpawner.Instance.Die(damager);
             }
+            UIController.Instance.healthSlider.value = currentHealth;
         }
     }
 }
