@@ -10,11 +10,11 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     public static MatchManager Instance;
 
-    public enum EventCodes : byte
+    public enum EventCodesEnum : byte
     {
         NewPlayer,
         ListPlayers,
-        ChangeStat
+        UpdateStat
     }
 
     [SerializeField] List<PlayerInfo> playerInfoList = new List<PlayerInfo>();
@@ -39,11 +39,36 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             SceneManager.LoadScene(0);
         }
+        else
+        {
+            NewPlayerSend(PhotonNetwork.NickName);
+        }
     }
 
     public void OnEvent(EventData photonEvent)
     {
+        if(photonEvent.Code < 200)
+        {
+            EventCodesEnum eventCodesEnum = (EventCodesEnum)photonEvent.Code;
+            object[] dataObjectArray = (object[])photonEvent.CustomData;
 
+            Debug.Log("Received Event " + eventCodesEnum);
+
+            switch(eventCodesEnum)
+            {
+                case EventCodesEnum.NewPlayer:
+                    NewPlayerReceive(dataObjectArray);
+                    break;
+
+                case EventCodesEnum.ListPlayers:
+                    ListPlayersReceive(dataObjectArray);
+                    break;
+
+                case EventCodesEnum.UpdateStat:
+                    UpdateStatsReceive(dataObjectArray);
+                    break;
+            }
+        }
     }
 
     public override void OnEnable()
@@ -54,5 +79,47 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     public override void OnDisable()
     {
         PhotonNetwork.RemoveCallbackTarget(this);
+    }
+
+    public void NewPlayerSend(string userName)
+    {
+        object[] packageObjectArray = new object[4];
+
+        packageObjectArray[0] = userName;
+        packageObjectArray[1] = PhotonNetwork.LocalPlayer.ActorNumber;
+        packageObjectArray[2] = 0;
+        packageObjectArray[3] = 0;
+
+        PhotonNetwork.RaiseEvent(
+            (byte)EventCodesEnum.NewPlayer,
+            packageObjectArray,
+            new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
+            new SendOptions { Reliability = true }
+            );
+    }
+
+    public void NewPlayerReceive(object[] dataReceivedArray)
+    {
+
+    }
+
+    public void ListPlayersSend()
+    {
+
+    }
+
+    public void ListPlayersReceive(object[] dataReceivedArray)
+    {
+
+    }
+
+    public void UpdateStatsSend()
+    {
+
+    }
+
+    public void UpdateStatsReceive(object[] dataReceivedArray)
+    {
+
     }
 }
