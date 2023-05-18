@@ -105,25 +105,94 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             (int)dataReceivedArray[3]);
 
         playerInfoList.Add(playerInfo);
+
+        ListPlayersSend();
     }
 
     public void ListPlayersSend()
     {
+        object[] package = new object[playerInfoList.Count];
 
+        for (int i = 0; i < playerInfoList.Count; i++)
+        {
+            object[] piece = new object[4];
+
+            piece[0] = playerInfoList[i].playerName;
+            piece[1] = playerInfoList[i].playerActor;
+            piece[2] = playerInfoList[i].playerKills;
+            piece[3] = playerInfoList[i].playerDeaths;
+
+            package[i] = piece;
+        }
+
+        PhotonNetwork.RaiseEvent(
+            (byte)EventCodesEnum.ListPlayers,
+            package,
+            new RaiseEventOptions { Receivers = ReceiverGroup.All },
+            new SendOptions { Reliability = true }
+            );
     }
 
     public void ListPlayersReceive(object[] dataReceivedArray)
     {
+        playerInfoList.Clear();
 
+        for (int i = 0; i < dataReceivedArray.Length; i++)
+        {
+            object[] piece = (object[])dataReceivedArray[i];
+            
+            PlayerInfo playerInfo = new PlayerInfo(
+                (string)piece[0],
+                (int)piece[1],
+                (int)piece[2],
+                (int)piece[3]
+                );
+
+            playerInfoList.Add(playerInfo);
+
+            if(PhotonNetwork.LocalPlayer.ActorNumber == playerInfo.playerActor)
+            {
+                index = i;
+            }
+        }
     }
 
-    public void UpdateStatsSend()
+    public void UpdateStatsSend(int actorSending, int statToUpdate, int amountToChange)
     {
+        object[] package = new object[] { actorSending, statToUpdate, amountToChange };
 
+        PhotonNetwork.RaiseEvent(
+            (byte)EventCodesEnum.UpdateStat,
+            package,
+            new RaiseEventOptions { Receivers = ReceiverGroup.All },
+            new SendOptions { Reliability = true }
+            );
     }
 
     public void UpdateStatsReceive(object[] dataReceivedArray)
     {
+        int actor = (int)dataReceivedArray[0];
+        int statType = (int)dataReceivedArray[1];
+        int amount = (int)dataReceivedArray[2];
 
+        for (int i = 0; i < playerInfoList.Count; i++)
+        {
+            if (playerInfoList[i].playerActor == actor)
+            {
+                switch (statType)
+                {
+                    case 0: // Kills
+                        playerInfoList[i].playerKills += amount;
+                        Debug.Log("Player " + playerInfoList[i].playerName + " :Kills " + playerInfoList[i].playerKills);
+                        break;
+
+                    case 1: // death
+                        playerInfoList[i].playerDeaths += amount;
+                        Debug.Log("Player " + playerInfoList[i].playerName + " :Deaths " + playerInfoList[i].playerDeaths);
+                        break;
+                }
+                break;
+            }
+        }
     }
 }

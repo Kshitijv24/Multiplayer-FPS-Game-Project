@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         UIController.Instance.weaponTemperatureSlider.maxValue = maxHeat;
 
         //SwitchGun();
-        photonView.RPC(nameof(SetGun), RpcTarget.All, selectedGun);
+        photonView.RPC("SetGun", RpcTarget.All, selectedGun);
         currentHealth = maxHealth; 
 
         if(photonView.IsMine)
@@ -218,7 +218,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 selectedGun = 0;
             }
             //SwitchGun();
-            photonView.RPC(nameof(SetGun), RpcTarget.All, selectedGun);
+            photonView.RPC("SetGun", RpcTarget.All, selectedGun);
         }
         else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
         {
@@ -229,7 +229,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 selectedGun = gunArray.Length - 1;
             }
             //SwitchGun();
-            photonView.RPC(nameof(SetGun), RpcTarget.All, selectedGun);
+            photonView.RPC("SetGun", RpcTarget.All, selectedGun);
         }
         for (int i = 0; i < gunArray.Length; i++)
         {
@@ -237,7 +237,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
                 selectedGun = i;
                 //SwitchGun();
-                photonView.RPC(nameof(SetGun), RpcTarget.All, selectedGun);
+                photonView.RPC("SetGun", RpcTarget.All, selectedGun);
             }
         }
     }
@@ -255,10 +255,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 PhotonNetwork.Instantiate(playerHitImpact.name, hit.point, Quaternion.identity);
 
                 hit.collider.gameObject.GetPhotonView().RPC(
-                    nameof(DealDamage), 
+                    "DealDamage",
                     RpcTarget.All, 
                     photonView.Owner.NickName, 
-                    gunArray[selectedGun].shotDamage);
+                    gunArray[selectedGun].shotDamage, PhotonNetwork.LocalPlayer.ActorNumber);
             }
             else
             {
@@ -297,12 +297,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void DealDamage(string damager, int damageAmount)
+    public void DealDamage(string damager, int damageAmount, int actor)
     {
-        TakeDamage(damager, damageAmount);
+        TakeDamage(damager, damageAmount, actor);
     }
 
-    public void TakeDamage(string damager, int damageAmount)
+    public void TakeDamage(string damager, int damageAmount, int actor)
     {
         if (photonView.IsMine)
         {
@@ -313,6 +313,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
                 currentHealth = 0;
                 PlayerSpawner.Instance.Die(damager);
+                MatchManager.Instance.UpdateStatsSend(actor, 0, 1);
             }
             UIController.Instance.healthSlider.value = currentHealth;
         }

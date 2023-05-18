@@ -48,6 +48,8 @@ public class PlayerSpawner : MonoBehaviour
         //PhotonNetwork.Destroy(player);
         //SpawnPlayer();
 
+        MatchManager.Instance.UpdateStatsSend(PhotonNetwork.LocalPlayer.ActorNumber, 1, 1);
+
         if(player != null)
         {
             StartCoroutine(DieCoroutine());
