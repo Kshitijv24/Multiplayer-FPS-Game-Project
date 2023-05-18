@@ -20,6 +20,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     [SerializeField] List<PlayerInfo> playerInfoList = new List<PlayerInfo>();
 
     int index;
+    List<PlayersLeaderboard> playersLeaderboardList = new List<PlayersLeaderboard>();
 
     private void Awake()
     {
@@ -42,6 +43,21 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         else
         {
             NewPlayerSend(PhotonNetwork.NickName);
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (UIController.Instance.leaderBoard.activeInHierarchy)
+            {
+                UIController.Instance.leaderBoard.SetActive(false);
+            }
+            else
+            {
+                ShowLeaderboard();
+            }
         }
     }
 
@@ -213,6 +229,31 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             UIController.Instance.killCountText.text = "Kills: 0";
             UIController.Instance.deathCountText.text = "Deaths: 0";
+        }
+    }
+
+    private void ShowLeaderboard()
+    {
+        UIController.Instance.leaderBoard.SetActive(true);
+
+        foreach (PlayersLeaderboard playersLeaderboard in playersLeaderboardList)
+        {
+            Destroy(playersLeaderboard.gameObject);
+        }
+        playersLeaderboardList.Clear();
+
+        UIController.Instance.playersLeaderboard.gameObject.SetActive(false);
+
+        foreach (PlayerInfo playerInfo in playerInfoList)
+        {
+            PlayersLeaderboard newPlayersLeaderboard = Instantiate(
+                UIController.Instance.playersLeaderboard, 
+                UIController.Instance.playersLeaderboard.transform.parent);
+
+            newPlayersLeaderboard.SetDetails(playerInfo.playerName, playerInfo.playerKills, playerInfo.playerDeaths);
+            newPlayersLeaderboard.gameObject.SetActive(true);
+
+            playersLeaderboardList.Add(newPlayersLeaderboard);
         }
     }
 }
