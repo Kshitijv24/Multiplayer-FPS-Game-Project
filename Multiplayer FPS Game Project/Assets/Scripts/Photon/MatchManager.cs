@@ -17,8 +17,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         UpdateStat
     }
 
-    [SerializeField] List<PlayerInfo> playerInfoList = new List<PlayerInfo>();
-
+    List<PlayerInfo> playerInfoList = new List<PlayerInfo>();
     int index;
     List<PlayersLeaderboard> playersLeaderboardList = new List<PlayersLeaderboard>();
 

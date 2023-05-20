@@ -6454,11 +6454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c09391a9e770fca4aad5de6e84a6cb40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInfoList:
-  - playerName: 
-    playerActor: 0
-    playerKills: 0
-    playerDeaths: 0
+  playerInfoList: []
 --- !u!4 &1920784226
 Transform:
   m_ObjectHideFlags: 0
