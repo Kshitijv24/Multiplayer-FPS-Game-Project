@@ -5,6 +5,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
 public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 {
@@ -132,10 +133,10 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             object[] piece = new object[4];
 
-            piece[0] = playerInfoList[i].playerName;
-            piece[1] = playerInfoList[i].playerActor;
-            piece[2] = playerInfoList[i].playerKills;
-            piece[3] = playerInfoList[i].playerDeaths;
+            piece[0] = playerInfoList[i].name;
+            piece[1] = playerInfoList[i].actor;
+            piece[2] = playerInfoList[i].kills;
+            piece[3] = playerInfoList[i].deaths;
 
             package[i] = piece;
         }
@@ -165,7 +166,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
             playerInfoList.Add(playerInfo);
 
-            if(PhotonNetwork.LocalPlayer.ActorNumber == playerInfo.playerActor)
+            if(PhotonNetwork.LocalPlayer.ActorNumber == playerInfo.actor)
             {
                 index = i;
             }
@@ -192,18 +193,18 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
         for (int i = 0; i < playerInfoList.Count; i++)
         {
-            if (playerInfoList[i].playerActor == actor)
+            if (playerInfoList[i].actor == actor)
             {
                 switch (statType)
                 {
                     case 0: // Kills
-                        playerInfoList[i].playerKills += amount;
-                        Debug.Log("Player " + playerInfoList[i].playerName + " :Kills " + playerInfoList[i].playerKills);
+                        playerInfoList[i].kills += amount;
+                        Debug.Log("Player " + playerInfoList[i].name + " :Kills " + playerInfoList[i].kills);
                         break;
 
                     case 1: // death
-                        playerInfoList[i].playerDeaths += amount;
-                        Debug.Log("Player " + playerInfoList[i].playerName + " :Deaths " + playerInfoList[i].playerDeaths);
+                        playerInfoList[i].deaths += amount;
+                        Debug.Log("Player " + playerInfoList[i].name + " :Deaths " + playerInfoList[i].deaths);
                         break;
                 }
 
@@ -221,8 +222,8 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if(playerInfoList.Count > index)
         {
-            UIController.Instance.killCountText.text = "Kills: " + playerInfoList[index].playerKills;
-            UIController.Instance.deathCountText.text = "Deaths: " + playerInfoList[index].playerDeaths;
+            UIController.Instance.killCountText.text = "Kills: " + playerInfoList[index].kills;
+            UIController.Instance.deathCountText.text = "Deaths: " + playerInfoList[index].deaths;
         }
         else
         {
@@ -243,16 +244,44 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
         UIController.Instance.playersLeaderboard.gameObject.SetActive(false);
 
-        foreach (PlayerInfo playerInfo in playerInfoList)
+        List<PlayerInfo> sortedList = SortPlayers(playerInfoList);
+
+        foreach (PlayerInfo playerInfo in sortedList)
         {
             PlayersLeaderboard newPlayersLeaderboard = Instantiate(
                 UIController.Instance.playersLeaderboard, 
                 UIController.Instance.playersLeaderboard.transform.parent);
 
-            newPlayersLeaderboard.SetDetails(playerInfo.playerName, playerInfo.playerKills, playerInfo.playerDeaths);
+            newPlayersLeaderboard.SetDetails(playerInfo.name, playerInfo.kills, playerInfo.deaths);
             newPlayersLeaderboard.gameObject.SetActive(true);
 
             playersLeaderboardList.Add(newPlayersLeaderboard);
         }
+    }
+
+    private List<PlayerInfo> SortPlayers(List<PlayerInfo> playersList)
+    {
+        List<PlayerInfo> sortedList = new List<PlayerInfo>();
+
+        while(sortedList.Count < playersList.Count)
+        {
+            int highest = -1;
+            PlayerInfo selectedPlayer = playersList[0];
+
+            foreach (PlayerInfo player in playersList)
+            {
+                if (!sortedList.Contains(player))
+                {
+                    if (player.kills > highest)
+                    {
+                        selectedPlayer = player;
+                        highest = player.kills;
+                    }
+                }
+            }
+            sortedList.Add(selectedPlayer);
+        }
+
+        return sortedList;
     }
 }

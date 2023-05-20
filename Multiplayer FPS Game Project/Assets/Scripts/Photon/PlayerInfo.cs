@@ -5,16 +5,16 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerInfo
 {
-    public string playerName;
-    public int playerActor;
-    public int playerKills;
-    public int playerDeaths;
+    public string name;
+    public int actor;
+    public int kills;
+    public int deaths;
 
     public PlayerInfo(string _playerName, int _playerActor, int _playerKills, int _playerDeaths)
     {
-        this.playerName = _playerName;
-        this.playerActor = _playerActor;
-        this.playerKills = _playerKills;
-        this.playerDeaths = _playerDeaths;
+        this.name = _playerName;
+        this.actor = _playerActor;
+        this.kills = _playerKills;
+        this.deaths = _playerDeaths;
     }
 }

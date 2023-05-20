@@ -28,8 +28,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     //[SerializeField] float heatPerShot;
     [SerializeField] float coolRate;
     [SerializeField] float overheatCoolRate;
-    [SerializeField] Gun[] gunArray;
     [SerializeField] float muzzleDisplayTime;
+    [SerializeField] Gun[] gunArray;
 
     [Header("================= Player Health Variables =================")]
     [Space(10)]
