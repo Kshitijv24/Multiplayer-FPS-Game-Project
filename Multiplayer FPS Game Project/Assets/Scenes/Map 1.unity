@@ -6701,6 +6701,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   mapCameraPoint: {fileID: 254918514}
+  perpetual: 1
   killsToWin: 3
   waitAfterEnding: 5
 --- !u!4 &1920784226

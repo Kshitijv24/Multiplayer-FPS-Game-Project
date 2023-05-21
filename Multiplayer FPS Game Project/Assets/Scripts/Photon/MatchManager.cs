@@ -15,7 +15,8 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         NewPlayer,
         ListPlayers,
-        UpdateStat
+        UpdateStat,
+        NextMatch
     }
 
     public enum GameState
@@ -27,6 +28,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public GameState state;
     public Transform mapCameraPoint;
+    public bool perpetual;
 
     [SerializeField] int killsToWin;
     [SerializeField] float waitAfterEnding;
@@ -94,6 +96,10 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
                 case EventCodesEnum.UpdateStat:
                     UpdateStatsReceive(dataObjectArray);
+                    break;
+
+                case EventCodesEnum.NextMatch:
+                    NextMatchReceive();
                     break;
             }
         }
@@ -257,6 +263,33 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         }
     }
 
+    public void NextMatchSend()
+    {
+        PhotonNetwork.RaiseEvent(
+            (byte)EventCodesEnum.NextMatch,
+            null,
+            new RaiseEventOptions { Receivers = ReceiverGroup.All },
+            new SendOptions { Reliability = true }
+            );
+    }
+
+    public void NextMatchReceive()
+    {
+        state = GameState.Playing;
+        
+        UIController.Instance.endScreen.SetActive(false);
+        UIController.Instance.leaderBoard.SetActive(false);
+
+        foreach (PlayerInfo player in playerInfoList)
+        {
+            player.kills = 0;
+            player.deaths = 0;
+        }
+
+        UpdateStatDisplay();
+        PlayerSpawner.Instance.SpawnPlayer();
+    }
+
     private void ShowLeaderboard()
     {
         UIController.Instance.leaderBoard.SetActive(true);
@@ -365,8 +398,19 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     private IEnumerator EndCoroutine()
     {
         yield return new WaitForSeconds(waitAfterEnding);
-        PhotonNetwork.AutomaticallySyncScene = false;
-        PhotonNetwork.LeaveRoom();
+
+        if (!perpetual)
+        {
+            PhotonNetwork.AutomaticallySyncScene = false;
+            PhotonNetwork.LeaveRoom();
+        }
+        else
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                NextMatchSend();
+            }
+        }
     }
 
     public override void OnLeftRoom()
