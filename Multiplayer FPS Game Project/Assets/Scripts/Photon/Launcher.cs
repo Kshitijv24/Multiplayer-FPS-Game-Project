@@ -8,6 +8,7 @@ using TMPro;
 public class Launcher : MonoBehaviourPunCallbacks
 {
     public static Launcher Instance;
+    public static bool hasSetNickName;
 
     [SerializeField] GameObject loadingPanel;
     [SerializeField] GameObject menuButtons;
@@ -29,7 +30,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     
     List<RoomButton> roomButtonList = new List<RoomButton>();
     List<TMP_Text> playerNameList = new List<TMP_Text>();
-    bool hasSetNickName;
     string playerName = "Player Name";
 
 
@@ -56,6 +56,9 @@ public class Launcher : MonoBehaviourPunCallbacks
 #if UNITY_EDITOR
         testRoomButton.SetActive(true);
 #endif
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     #region Normal Methods

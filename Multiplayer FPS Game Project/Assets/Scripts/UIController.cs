@@ -16,6 +16,7 @@ public class UIController : MonoBehaviour
     public TMP_Text killCountText, deathCountText;
     public GameObject leaderBoard;
     public PlayersLeaderboard playersLeaderboard;
+    public GameObject endScreen;
 
     private void Awake()
     {
