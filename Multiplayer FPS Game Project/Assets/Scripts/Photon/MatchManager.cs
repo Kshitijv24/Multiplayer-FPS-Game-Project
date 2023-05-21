@@ -394,7 +394,6 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         StartCoroutine(EndCoroutine());
     }
 
-
     private IEnumerator EndCoroutine()
     {
         yield return new WaitForSeconds(waitAfterEnding);
@@ -408,7 +407,23 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                NextMatchSend();
+                if(!Launcher.Instance.changeMapBetweenRounds)
+                {
+                    NextMatchSend();
+                }
+                else
+                {
+                    int newRandomLevel = Random.Range(0, Launcher.Instance.mapsArray.Length);
+
+                    if (Launcher.Instance.mapsArray[newRandomLevel] == SceneManager.GetActiveScene().name)
+                    {
+                        NextMatchSend();
+                    }
+                    else
+                    {
+                        PhotonNetwork.LoadLevel(Launcher.Instance.mapsArray[newRandomLevel]);
+                    }
+                }
             }
         }
     }

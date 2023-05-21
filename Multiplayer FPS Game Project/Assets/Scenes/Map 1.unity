@@ -3574,6 +3574,10 @@ PrefabInstance:
       propertyPath: mapCameraPoint
       value: 
       objectReference: {fileID: 254918514}
+    - target: {fileID: 7857185842916899210, guid: 33ba53fe682af8e4d84467d77d6d608f, type: 3}
+      propertyPath: continueToAnotherMatch
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

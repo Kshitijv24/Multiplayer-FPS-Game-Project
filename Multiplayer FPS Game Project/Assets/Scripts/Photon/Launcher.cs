@@ -10,6 +10,9 @@ public class Launcher : MonoBehaviourPunCallbacks
     public static Launcher Instance;
     public static bool hasSetNickName;
 
+    public string[] mapsArray;
+    public bool changeMapBetweenRounds;
+
     [SerializeField] GameObject loadingPanel;
     [SerializeField] GameObject menuButtons;
     [SerializeField] TMP_Text loadingText;
@@ -168,7 +171,8 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        PhotonNetwork.LoadLevel(levelToPlay);
+        //PhotonNetwork.LoadLevel(levelToPlay);
+        PhotonNetwork.LoadLevel(mapsArray[Random.Range(0, mapsArray.Length)]);
     }
 
     public void QuickJoin()
