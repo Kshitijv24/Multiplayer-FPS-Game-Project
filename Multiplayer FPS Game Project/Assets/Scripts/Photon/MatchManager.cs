@@ -28,7 +28,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     public GameState state;
     public Transform mapCameraPoint;
-    public bool perpetual;
+    public bool continueToAnotherMatch;
 
     [SerializeField] int killsToWin;
     [SerializeField] float waitAfterEnding;
@@ -399,7 +399,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         yield return new WaitForSeconds(waitAfterEnding);
 
-        if (!perpetual)
+        if (!continueToAnotherMatch)
         {
             PhotonNetwork.AutomaticallySyncScene = false;
             PhotonNetwork.LeaveRoom();
