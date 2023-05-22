@@ -17,6 +17,7 @@ public class UIController : MonoBehaviour
     public GameObject leaderBoard;
     public PlayersLeaderboard playersLeaderboard;
     public GameObject endScreen;
+    public TMP_Text timerText;
 
     private void Awake()
     {
