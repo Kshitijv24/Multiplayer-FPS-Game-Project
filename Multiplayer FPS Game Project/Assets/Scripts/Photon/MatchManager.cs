@@ -32,10 +32,12 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
     [SerializeField] int killsToWin;
     [SerializeField] float waitAfterEnding;
+    [SerializeField] float matchLength;
 
     List<PlayerInfo> playerInfoList = new List<PlayerInfo>();
     int index;
     List<PlayersLeaderboard> playersLeaderboardList = new List<PlayersLeaderboard>();
+    float currentMatchTime;
 
     private void Awake()
     {
@@ -59,6 +61,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             NewPlayerSend(PhotonNetwork.NickName);
             state = GameState.Playing;
+            SetupTimer();
         }
     }
 
@@ -74,6 +77,24 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
             {
                 ShowLeaderboard();
             }
+        }
+
+        if(currentMatchTime > 0 && state == GameState.Playing)
+        {
+            currentMatchTime -= Time.deltaTime;
+
+            if(currentMatchTime <= 0)
+            {
+                currentMatchTime = 0;
+                state = GameState.Ending;
+
+                if(PhotonNetwork.IsMasterClient)
+                {
+                    ListPlayersSend();
+                    StateCheck();
+                }
+            }
+            UpdateTimerDisplay();
         }
     }
 
@@ -288,6 +309,7 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
 
         UpdateStatDisplay();
         PlayerSpawner.Instance.SpawnPlayer();
+        SetupTimer();
     }
 
     private void ShowLeaderboard()
@@ -426,6 +448,21 @@ public class MatchManager : MonoBehaviourPunCallbacks, IOnEventCallback
                 }
             }
         }
+    }
+
+    public void SetupTimer()
+    {
+        if(matchLength > 0)
+        {
+            currentMatchTime = matchLength;
+            UpdateTimerDisplay();
+        }
+    }
+
+    public void UpdateTimerDisplay()
+    {
+        var timeToDisplay = System.TimeSpan.FromSeconds(currentMatchTime);
+        UIController.Instance.timerText.text = timeToDisplay.Minutes.ToString("00") + ":" + timeToDisplay.Seconds.ToString("00");
     }
 
     public override void OnLeftRoom()

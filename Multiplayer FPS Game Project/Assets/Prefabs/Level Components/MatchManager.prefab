@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   mapCameraPoint: {fileID: 0}
-  continueToAnotherMatch: 0
+  continueToAnotherMatch: 1
   killsToWin: 3
   waitAfterEnding: 5
+  matchLength: 5
