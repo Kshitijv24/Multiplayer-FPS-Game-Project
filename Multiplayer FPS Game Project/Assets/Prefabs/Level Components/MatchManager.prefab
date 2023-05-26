@@ -49,4 +49,4 @@ MonoBehaviour:
   continueToAnotherMatch: 1
   killsToWin: 3
   waitAfterEnding: 5
-  matchLength: 10
+  matchLength: 20

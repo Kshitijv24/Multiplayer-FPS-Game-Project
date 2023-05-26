@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [SerializeField] GameObject playerModel;
     [SerializeField] Transform modelGunPoint;
     [SerializeField] Transform gunHolder;
+    [SerializeField] Material[] playerSkinArray;
 
     float mouseVerticalRotation;
     Vector2 mouseInput;
@@ -79,6 +80,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
             gunHolder.localPosition = Vector3.zero;
             gunHolder.localRotation = Quaternion.identity;
         }
+
+        playerModel.GetComponent<Renderer>().material = playerSkinArray[photonView.Owner.ActorNumber % playerSkinArray.Length];
     }
 
     private void Update()
