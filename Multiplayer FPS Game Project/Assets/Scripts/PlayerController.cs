@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [SerializeField] float overheatCoolRate;
     [SerializeField] float muzzleDisplayTime;
     [SerializeField] Gun[] gunArray;
+    [SerializeField] float adsSpeed;
+    [SerializeField] Transform adsInPoint, adsOutPoint;
 
     [Header("================= Player Health Variables =================")]
     [Space(10)]
@@ -56,6 +58,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     int selectedGun;
     float muzzleCounter;
     int currentHealth;
+    float defaultAdsValue = 60f;
 
     private void Start()
     {
@@ -63,7 +66,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         mainCamera = Camera.main;
         UIController.Instance.weaponTemperatureSlider.maxValue = maxHeat;
 
-        //SwitchGun();
         photonView.RPC("SetGun", RpcTarget.All, selectedGun);
         currentHealth = maxHealth; 
 
@@ -179,7 +181,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             muzzleCounter -= Time.deltaTime;
 
-            if(muzzleCounter <= 0)
+            if (muzzleCounter <= 0)
             {
                 gunArray[selectedGun].muzzleFlash.SetActive(false);
             }
@@ -204,7 +206,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
             heatCounter -= coolRate * Time.deltaTime;
         }
-        if(heatCounter <= 0)
+        if (heatCounter <= 0)
         {
             heatCounter = 0f;
         }
@@ -212,7 +214,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             heatCounter -= overheatCoolRate * Time.deltaTime;
 
-            if(heatCounter <= 0 )
+            if (heatCounter <= 0)
             {
                 overHeated = false;
                 UIController.Instance.overheatedMessage.gameObject.SetActive(false);
@@ -220,11 +222,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
         UIController.Instance.weaponTemperatureSlider.value = heatCounter;
 
-        if(Input.GetAxisRaw("Mouse ScrollWheel") >  0)
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
         {
             selectedGun++;
 
-            if(selectedGun >= gunArray.Length)
+            if (selectedGun >= gunArray.Length)
             {
                 selectedGun = 0;
             }
@@ -239,7 +241,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
                 selectedGun = gunArray.Length - 1;
             }
-            //SwitchGun();
+
             photonView.RPC("SetGun", RpcTarget.All, selectedGun);
         }
         for (int i = 0; i < gunArray.Length; i++)
@@ -247,9 +249,24 @@ public class PlayerController : MonoBehaviourPunCallbacks
             if (Input.GetKeyDown((i + 1).ToString()))
             {
                 selectedGun = i;
-                //SwitchGun();
                 photonView.RPC("SetGun", RpcTarget.All, selectedGun);
             }
+        }
+
+        HandleGunADS();
+    }
+
+    private void HandleGunADS()
+    {
+        if (Input.GetMouseButton(1))
+        {
+            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, gunArray[selectedGun].adsZoom, adsSpeed * Time.deltaTime);
+            gunHolder.position = Vector3.Lerp(gunHolder.position, adsInPoint.position, adsSpeed * Time.deltaTime);
+        }
+        else
+        {
+            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, defaultAdsValue, adsSpeed * Time.deltaTime);
+            gunHolder.position = Vector3.Lerp(gunHolder.position, adsOutPoint.position, adsSpeed * Time.deltaTime);
         }
     }
 

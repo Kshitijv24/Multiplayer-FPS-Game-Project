@@ -9,4 +9,5 @@ public class Gun : MonoBehaviour
     public bool isAutomatic;
     public GameObject muzzleFlash;
     public int shotDamage;
+    public float adsZoom;
 }
