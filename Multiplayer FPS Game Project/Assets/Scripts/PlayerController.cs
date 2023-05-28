@@ -45,6 +45,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [SerializeField] Transform gunHolder;
     [SerializeField] Material[] playerSkinArray;
 
+    [Header("================= Audio Variables =================")]
+    [SerializeField] AudioSource footstepSlow;
+    [SerializeField] AudioSource footstepFast;
+
     float mouseVerticalRotation;
     Vector2 mouseInput;
     Vector3 moveDirection;
@@ -150,10 +154,28 @@ public class PlayerController : MonoBehaviourPunCallbacks
         if (Input.GetKey(KeyCode.LeftShift))
         {
             activeMoveSpeed = runSpeed;
+
+            if (!footstepFast.isPlaying && moveDirection != Vector3.zero)
+            {
+                footstepSlow.Stop();
+                footstepFast.Play();
+            }
         }
         else
         {
             activeMoveSpeed = moveSpeed;
+
+            if (!footstepSlow.isPlaying && moveDirection != Vector3.zero)
+            {
+                footstepFast.Stop();
+                footstepSlow.Play();
+            }
+        }
+
+        if(moveDirection == Vector3.zero || !isGrounded)
+        {
+            footstepSlow.Stop();
+            footstepFast.Stop();
         }
 
         float yVelocity = movement.y;
@@ -311,6 +333,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
         gunArray[selectedGun].muzzleFlash.SetActive(true);
         muzzleCounter = muzzleDisplayTime;
+
+        gunArray[selectedGun].shotSound.Stop();
+        gunArray[selectedGun].shotSound.Play();
     }
 
     private void SwitchGun()
